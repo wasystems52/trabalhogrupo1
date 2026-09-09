@@ -98,7 +98,7 @@ async function excluirLivro() {
     const index = livros.findIndex(l => l.id === id.trim());
 
     if (index === -1) {
-        console.log('\n Livro não encontrado.');
+        console.log('\n Livro nao encontrado.');
         await perguntar('\nPressione ENTER...');
         return;
     }
@@ -110,4 +110,46 @@ async function excluirLivro() {
 }
 }
 
-// --- REGRA DE NEGÓCIO EXCLUSIVA DO CLIENTE ---
+// Maria Eduarda
+
+async function menuPrincipal() {
+    console.clear()
+    console.log("======= SISTEMA DE BIBLIOTECA ============");
+    console.log("Como voce deseja acessar o Sistema?");
+    console.log("1.Entrar como Atendente(Gerenciamento!)");
+    console.log("2.Entrar como Cliente(Consulta e Reserva)");
+    console.log("3.Sair");
+    console.log("============================================");
+
+    const opcao=await perguntar("Escolha uma opcao:");
+    switch(opcao.trim()) {
+        case '1':
+            await menuAtendente();
+            break;
+            case '2':
+                await menuCliente();
+                break;
+                case '3':
+                    console.log("\nSaindo...Obrigado por utilizar a biblioteca!");
+                    rl.close();
+                    process.exit(0);
+                    default:
+                        console.log("\nOpcao Invalida!");
+                        await perguntar("\nPressione ENTER para tentar novamente...");
+                        await menuPrincipal();
+    }
+}
+
+async function menuAtendente() {
+    console.clear();
+    console.log("========== MENU DO ATENDENTE ==========");
+    console.log("1.Cadastrar Novo Livro (Create)");
+    console.log("2.Listar Livros Cadastrados (Read)");
+    console.log("3.Atualiar Dados de um Livro(Update)");
+    console.log("4. Remover Livro do Acervo(Delete)");
+    console.log("5.Voltar ao Menu Principal");
+    console.log("========================================"); 
+}
+await menuAtendente();
+
+}
