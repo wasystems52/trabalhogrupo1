@@ -19,16 +19,5 @@ async function pegarEmprestado() {
         console.log(`\n Boa leitura! Você pegou "${livro.titulo}" emprestado.`);
     }
     await perguntar('\nPressione ENTER para continuar...');
-} 
-async function devolverLivro() {
-    console.log('\n--- ↩ Devolver Livro ---');
-    const livrosEmprestados = livros.filter(l => !l.disponivel);
-
-    if (livrosEmprestados.length === 0) {
-        console.log('Não há livros emprestados para devolver no momento.');
-        await perguntar('\nPressione ENTER...');
-        return;
-    }
-
-    livrosEmprestados.forEach(l => console.log(`ID: ${l.id} | Título: "${l.titulo}"`));
 }
+
