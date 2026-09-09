@@ -152,4 +152,40 @@ async function menuAtendente() {
 }
 await menuAtendente();
 
+
+// guilherme
+async function menuCliente() {
+    console.clear();
+    console.log("===== MENU DO CLIENTE ====");
+    console.log("1. Ver Catálogo de Livros");
+    console.log("2. Pegar Livro Emprestado");
+    console.log("3. Devolver um Livro");
+    console.log("4. Voltar ao Menu Principal");
+
+    console.log("==========================")
+
+    const opcao = wait
+    perguntar("Escolha uma opção: ");
+
+    switch (opcao.trim()) {
+        case "1":
+            listarLivros();
+            await
+            perguntar("\nPressione ENTER para voltar...");
+            break;
+            case "2":
+                await pegarEmprestado();
+                break;
+                case "3":
+                    await devolverLivro();
+                    break;
+                    case "4":
+                        await menuPrincipal();
+                        return;
+                        default:
+                            console.log("\n Opção Inválida!")
+;
+awaitperguntar("\nPressione ENTER para voltar...");
+    }
+    await menuCliente();
 }
