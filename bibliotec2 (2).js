@@ -7,7 +7,7 @@ async function pegarEmprestado() {
     }
 
     const id = await perguntar('\nDigite o ID do livro que deseja: ');
-    const livro = livros.find(l => l.id === id.trim());
+    const livro = livro               .find(l => l.id === id.trim());
 
     if (!livro) {
         console.log('\n Livro não encontrado.');
@@ -21,14 +21,25 @@ async function pegarEmprestado() {
     await perguntar('\nPressione ENTER para continuar...');
 } 
 async function devolverLivro() {
-    console.log('\n--- ↩ Devolver Livro ---');
-    const livrosEmprestados = livros.filter(l => !l.disponivel);
+    console.log('\n--- ↩ Devolver Livro ---');
+    const livrosEmprestados = livro.filter(l => !l.disponivel);
 
-    if (livrosEmprestados.length === 0) {
-        console.log('Não há livros emprestados para devolver no momento.');
-        await perguntar('\nPressione ENTER...');
-        return;
-    }
+    if (livrosEmprestados.length === 0) {
+        console.log('Não há livros emprestados para devolver no momento.');
+        await perguntar('\nPressione ENTER...');
+        return;
+    }
 
-    livrosEmprestados.forEach(l => console.log(`ID: ${l.id} | Título: "${l.titulo}"`));
-}
+    livrosEmprestados.forEach(l => console.log(`ID: ${l.id} | Título: "${l.titulo}"`));
+} 
+    const id = await perguntar('n\Digite o ID do livro que está devolvendo:'); 
+    const livro = livros.find(l => l.id === id.trim() &&  !l.disponivel);
+    if (!livro) {
+      console.log('\n ID inválido ou o livro não estava emprestado');
+    } else { 
+      livro.disponivel = true;
+      salvarDados();
+      console.log('\n Obrigado! Livro `${livro.titulo}` devolvidopara o acervo.');
+    }
+    await perguntar('\nPressione ENTER para continuar...');
+    // function
