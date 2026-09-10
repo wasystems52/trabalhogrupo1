@@ -1,3 +1,4 @@
+//washington
 const readline = require('readline');
 const fs = require('fs');
 
@@ -22,27 +23,30 @@ function salvarDados() {
     fs.writeFileSync(ARQUIVO_DADOS, JSON.stringify(livros, null, 2));
 }
 
-const perguntar = (pergunta) => {
+// Promisify do readline.question
+const perguntar = (pergunta) => new Promise((resolve) => {
+    rl.question(pergunta, resolve);
+});
 
 function listarLivros() {
-    console.log('\n---  Catálogo de Livros ---');
+    console.log('\n--- Catálogo de Livros ---');
     if (livros.length === 0) {
         console.log('Nenhum livro no acervo.');
         return;
     }
     livros.forEach((l) => {
-        const status = l.disponivel ? ' Disponível' : ' Emprestado';
+        const status = l.disponivel ? 'Disponível' : 'Emprestado';
         console.log(`ID: ${l.id} | Título: "${l.titulo}" | Autor: ${l.autor} | Status: ${status}`);
     });
 }
 
 async function criarLivro() {
-    console.log('\n---  Cadastrar Novo Livro ---');
+    console.log('\n--- Cadastrar Novo Livro ---');
     const titulo = await perguntar('Título: ');
     const autor = await perguntar('Autor: ');
 
     if (!titulo.trim() || !autor.trim()) {
-        console.log('\n Campos obrigatórios vazios! Operação cancelada.');
+        console.log('\nCampos obrigatórios vazios! Operação cancelada.');
         await perguntar('\nPressione ENTER...');
         return;
     }
@@ -54,12 +58,12 @@ async function criarLivro() {
         disponivel: true // Todo livro novo começa disponível
     });
     salvarDados();
-    console.log('\n Livro adicionado com sucesso!');
+    console.log('\nLivro adicionado com sucesso!');
     await perguntar('\nPressione ENTER...');
 }
 
 async function atualizarLivro() {
-    console.log('\n---  Atualizar Livro ---');
+    console.log('\n--- Atualizar Livro ---');
     listarLivros();
     if (livros.length === 0) {
         await perguntar('\nPressione ENTER...');
@@ -70,7 +74,7 @@ async function atualizarLivro() {
     const livro = livros.find(l => l.id === id.trim());
 
     if (!livro) {
-        console.log('\n Livro não encontrado.');
+        console.log('\nLivro não encontrado.');
         await perguntar('\nPressione ENTER...');
         return;
     }
@@ -82,12 +86,59 @@ async function atualizarLivro() {
     if (novoAutor.trim()) livro.autor = novoAutor.trim();
 
     salvarDados();
-    console.log('\n Dados atualizados!');
+    console.log('\nDados atualizados!');
+    await perguntar('\nPressione ENTER...');
+}
+
+//andre
+async function pegarEmprestado() {
+    console.log('\n--- Emprestar Livro ---');
+    listarLivros();
+    if (livros.length === 0) {
+        await perguntar('\nPressione ENTER...');
+        return;
+    }
+
+    const id = await perguntar('\nID do livro para emprestar: ');
+    const livro = livros.find((item) => item.id === id.trim());
+
+    if (!livro) {
+        console.log('\nLivro não encontrado.');
+    } else if (!livro.disponivel) {
+        console.log('\nEsse livro já está emprestado.');
+    } else {
+        livro.disponivel = false;
+        salvarDados();
+        console.log('\nLivro emprestado com sucesso!');
+    }
+    await perguntar('\nPressione ENTER...');
+}
+
+async function devolverLivro() {
+    console.log('\n--- Devolver Livro ---');
+    listarLivros();
+    if (livros.length === 0) {
+        await perguntar('\nPressione ENTER...');
+        return;
+    }
+
+    const id = await perguntar('\nID do livro para devolver: ');
+    const livro = livros.find((item) => item.id === id.trim());
+
+    if (!livro) {
+        console.log('\nLivro não encontrado.');
+    } else if (livro.disponivel) {
+        console.log('\nEsse livro já está disponível.');
+    } else {
+        livro.disponivel = true;
+        salvarDados();
+        console.log('\nLivro devolvido com sucesso!');
+    }
     await perguntar('\nPressione ENTER...');
 }
 
 async function excluirLivro() {
-    console.log('\n---  Excluir Livro ---');
+    console.log('\n--- Excluir Livro ---');
     listarLivros();
     if (livros.length === 0) {
         await perguntar('\nPressione ENTER...');
@@ -98,94 +149,97 @@ async function excluirLivro() {
     const index = livros.findIndex(l => l.id === id.trim());
 
     if (index === -1) {
-        console.log('\n Livro nao encontrado.');
+        console.log('\nLivro não encontrado.');
         await perguntar('\nPressione ENTER...');
         return;
     }
 
     livros.splice(index, 1);
     salvarDados();
-    console.log('\n Livro removido do acervo.');
+    console.log('\nLivro removido do acervo.');
     await perguntar('\nPressione ENTER...');
 }
-}
 
-// Maria Eduarda
-
-async function menuPrincipal() {
-    console.clear()
-    console.log("======= SISTEMA DE BIBLIOTECA ============");
-    console.log("Como voce deseja acessar o Sistema?");
-    console.log("1.Entrar como Atendente(Gerenciamento!)");
-    console.log("2.Entrar como Cliente(Consulta e Reserva)");
-    console.log("3.Sair");
-    console.log("============================================");
-
-    const opcao=await perguntar("Escolha uma opcao:");
-    switch(opcao.trim()) {
-        case '1':
-            await menuAtendente();
-            break;
-            case '2':
-                await menuCliente();
-                break;
-                case '3':
-                    console.log("\nSaindo...Obrigado por utilizar a biblioteca!");
-                    rl.close();
-                    process.exit(0);
-                    default:
-                        console.log("\nOpcao Invalida!");
-                        await perguntar("\nPressione ENTER para tentar novamente...");
-                        await menuPrincipal();
-    }
-}
+//Maria Eduarda
 
 async function menuAtendente() {
-    console.clear();
-    console.log("========== MENU DO ATENDENTE ==========");
-    console.log("1.Cadastrar Novo Livro (Create)");
-    console.log("2.Listar Livros Cadastrados (Read)");
-    console.log("3.Atualiar Dados de um Livro(Update)");
-    console.log("4. Remover Livro do Acervo(Delete)");
-    console.log("5.Voltar ao Menu Principal");
-    console.log("========================================"); 
-}
-await menuAtendente();
+    while (true) {
+        console.clear();
+        console.log("========== MENU DO ATENDENTE ==========");
+        console.log("1. Cadastrar Novo Livro (Create)");
+        console.log("2. Listar Livros Cadastrados (Read)");
+        console.log("3. Atualizar Dados de um Livro (Update)");
+        console.log("4. Remover Livro do Acervo (Delete)");
+        console.log("5. Voltar ao Menu Principal");
+        console.log("========================================"); 
 
-
-// guilherme
-async function menuCliente() {
-    console.clear();
-    console.log("===== MENU DO CLIENTE ====");
-    console.log("1. Ver Catálogo de Livros");
-    console.log("2. Pegar Livro Emprestado");
-    console.log("3. Devolver um Livro");
-    console.log("4. Voltar ao Menu Principal");
-
-    console.log("==========================")
-
-    const opcao = wait
-    perguntar("Escolha uma opção: ");
-
-    switch (opcao.trim()) {
-        case "1":
+        const opcao = (await perguntar('Escolha uma opção: ')).trim();
+        
+        if (opcao === '1') await criarLivro();
+        else if (opcao === '2') {
             listarLivros();
-            await
-            perguntar("\nPressione ENTER para voltar...");
-            break;
-            case "2":
-                await pegarEmprestado();
-                break;
-                case "3":
-                    await devolverLivro();
-                    break;
-                    case "4":
-                        await menuPrincipal();
-                        return;
-                        default:
-                            console.log("\n Opção Inválida!")
-;
-awaitperguntar("\nPressione ENTER para voltar...");
+            await perguntar('\nPressione ENTER para voltar...');
+        } 
+        else if (opcao === '3') await atualizarLivro();
+        else if (opcao === '4') await excluirLivro();
+        else if (opcao === '5') break;
+        else {
+            console.log('\nOpção inválida!');
+            await perguntar('\nPressione ENTER para tentar novamente...');
+        }
     }
-    await menuCliente();
 }
+
+async function menuCliente() {
+    while (true) {
+        console.clear();
+        console.log("===== MENU DO CLIENTE =====");
+        console.log("1. Ver Catálogo de Livros");
+        console.log("2. Pegar Livro Emprestado");
+        console.log("3. Devolver um Livro");
+        console.log("4. Voltar ao Menu Principal");
+        console.log("==========================");
+
+        const opcao = (await perguntar("Escolha uma opção: ")).trim();
+
+        if (opcao === "1") {
+            listarLivros();
+            await perguntar("\nPressione ENTER para voltar...");
+        } 
+        else if (opcao === "2") await pegarEmprestado();
+        else if (opcao === "3") await devolverLivro();
+        else if (opcao === "4") break;
+        else {
+            console.log("\nOpção Inválida!");
+            await perguntar("\nPressione ENTER para voltar...");
+        }
+    }
+}
+
+async function menuPrincipal() {
+    while (true) {
+        console.clear();
+        console.log("======= SISTEMA DE BIBLIOTECA ============");
+        console.log("Como você deseja acessar o Sistema?");
+        console.log("1. Entrar como Atendente (Gerenciamento)");
+        console.log("2. Entrar como Cliente (Consulta e Empréstimo)");
+        console.log("3. Sair");
+        console.log("============================================");
+
+        const opcao = (await perguntar("Escolha uma opção: ")).trim();
+
+        if (opcao === '1') await menuAtendente();
+        else if (opcao === '2') await menuCliente();
+        else if (opcao === '3') {
+            console.log("\nSaindo... Obrigado por utilizar a biblioteca!");
+            rl.close();
+            process.exit(0);
+        } else {
+            console.log("\nOpção Inválida!");
+            await perguntar("\nPressione ENTER para tentar novamente...");
+        }
+    }
+}
+
+// Inicializa a aplicação
+menuPrincipal();
