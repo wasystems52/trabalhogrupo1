@@ -33,7 +33,7 @@ async function devolverLivro() {
     livrosEmprestados.forEach(l => console.log(`ID: ${l.id} | Título: "${l.titulo}"`));
 } 
     const id = await perguntar('n\Digite o ID do livro que está devolvendo:'); 
-    const livro = livros.find(l => l.id === id.trim() &&  !l.disponivel);
+    const livro = livro.find(l => l.id === id.trim() &&  !l.disponivel);
     if (!livro) {
       console.log('\n ID inválido ou o livro não estava emprestado');
     } else { 
@@ -42,4 +42,4 @@ async function devolverLivro() {
       console.log('\n Obrigado! Livro `${livro.titulo}` devolvidopara o acervo.');
     }
     await perguntar('\nPressione ENTER para continuar...');
-    // function
+    
